@@ -13,3 +13,7 @@ var result = img.toBase64();
 # Features
 
 - foolishly plain implementaion
+
+# memo
+
+- http://www.geocities.jp/showa_yojyo/note/python-pil.html
