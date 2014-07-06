@@ -149,15 +149,14 @@ var uint8arr = new Uint8Array(pool);
 // cut
 uint8arr = uint8arr.subarray(0, uint8arr.length - 400);
 
-// convert Uint8Array to base64
-var base64pool = [];
-var setCount = Math.floor(uint8arr.length / 6);
-for (var r = 0; r < setCount; r++) {
-    var i = r * 6;
-    var sets = Array.prototype.slice.call(uint8arr.subarray(i, i+6), 0).join("");
-    base64pool.push(mapReverse[sets]);
+var t = "";
+for (var i = 0; i < uint8arr.length; i++) {
+    t += String(uint8arr[i]);
+    if (i % 4 == 3) {
+        t += "\t"; 
+    }
+    if (i % 16 == 15) {
+        t += "\n";    
+    }
 }
-var recoverdBase64String = base64pool.join("");
-
-// console.log(recoverdBase64String);
-console.log(uint8arr.subarray(0, 8));
+console.log(t);
