@@ -2,8 +2,9 @@
   "name": "crescent",
   "version": "0.0.1",
   "description": "JavaScript images Binarization/Comparsion",
-  "main": "crescent.js",
+  "main": "lib/crescent.js",
   "scripts": {
+    "build": "babel src --out-dir lib",
     "test": "jest"
   },
   "repository": {
@@ -22,6 +23,11 @@
   },
   "homepage": "https://github.com/otiai10/crescentjs#readme",
   "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-cli": "^6.10.1",
+    "babel-jest": "^12.1.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-0": "^6.5.0",
     "jest-cli": "^12.1.1"
   }
 }
