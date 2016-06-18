@@ -4,7 +4,7 @@
   "description": "JavaScript images Binarization/Comparsion",
   "main": "lib/crescent.js",
   "scripts": {
-    "build": "babel src --out-dir lib",
+    "build": "babel src --out-file lib/crescent.js",
     "start": "npm run build -- --watch",
     "release": "npm run build && npm publish",
     "test": "jest"
