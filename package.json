@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/otiai10/crescentjs/issues"
   },
-  "homepage": "https://github.com/otiai10/crescentjs#readme"
+  "homepage": "https://github.com/otiai10/crescentjs#readme",
+  "devDependencies": {
+    "jest-cli": "^12.1.1"
+  }
 }
