@@ -5,6 +5,8 @@
   "main": "lib/crescent.js",
   "scripts": {
     "build": "babel src --out-dir lib",
+    "start": "npm run build -- --watch",
+    "release": "npm run build && npm publish",
     "test": "jest"
   },
   "repository": {
