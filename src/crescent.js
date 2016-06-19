@@ -1,6 +1,6 @@
-import Img from './Img';
+import Picture from './Picture';
 const crescent = {
-  Img,
+  Picture,
   hello: () => {
     return 'hello, this is crescent'
   }
