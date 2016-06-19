@@ -7,7 +7,7 @@
     "build": "babel src --out-file lib/crescent.js",
     "start": "npm run build -- --watch",
     "release": "npm run build && npm publish",
-    "ci": "karma start --single-run",
+    "ci": "karma start --single-run --browsers Firefox",
     "test": "karma start"
   },
   "repository": {
