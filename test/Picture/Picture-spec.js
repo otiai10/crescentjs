@@ -4,8 +4,10 @@ describe('Picture', () => {
     it('should initialize Uint8ClampedArray', () => {
       const pic = new Picture(base64samples['01']);
       expect(pic instanceof Picture).to.be.true;
-      expect(pic.binary instanceof Uint8ClampedArray).to.be.true;
-      expect(pic.canvas instanceof HTMLCanvasElement).to.be.true;
+      return pic.initialized.then((pic) => {
+        expect(pic.binary instanceof Uint8ClampedArray).to.be.true;
+        expect(pic.canvas instanceof HTMLCanvasElement).to.be.true;
+      })
     })
   })
 })
