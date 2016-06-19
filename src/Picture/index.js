@@ -24,4 +24,29 @@ export default class Picture {
   hello() {
     return 'hello, this is crescent.Image';
   }
+  binarize(threshold = (255/2) * 4) {
+    // 全部じゃないっぽいぞ　
+    for (let i = 0; i < this.binary.length; i += 4) {
+      if (this.binary[i] + this.binary[i+1] + this.binary[i+2] + this.binary[i+3] > threshold) {
+        this.binary[i] = this.binary[i+1] = this.binary[i+2] = this.binary[i+3] = 255;
+      } else {
+        this.binary[i] = this.binary[i+1] = this.binary[i+2] = this.binary[i+3] = 0;
+      }
+    }
+    return Promise.resolve(this);
+  }
+  chunks() {
+    let pool = [];
+    for (let i = 0; i < this.binary.length; i += 4) {
+      pool.push(this.binary.slice(i, i+4));
+    }
+    return pool;
+  }
+  debug() {
+    this.open = () => {
+      const uri = 'data:image/png;base64,' + btoa(String.fromCharCode.apply(null, this.binary));
+      window.open(uri);
+    }
+    return this;
+  }
 }

@@ -1,8 +1,9 @@
 import {Picture} from '../../src/crescent';
+
 describe('Picture', () => {
   describe('constructor', () => {
     it('should initialize Uint8ClampedArray', () => {
-      const pic = new Picture(base64samples['01']);
+      let pic = new Picture(base64samples['01']);
       expect(pic instanceof Picture).to.be.true;
       return pic.initialized.then((pic) => {
         expect(pic.binary instanceof Uint8ClampedArray).to.be.true;
@@ -10,7 +11,24 @@ describe('Picture', () => {
       })
     })
   })
+  describe('binarize', () => {
+    it('should binarize picture', () => {
+      let pic = new Picture(base64samples['01']);
+      expect(pic instanceof Picture).to.be.true;
+      return pic.initialized.then(pic => {
+        return pic.binarize();
+      }).then(pic => {
+        pic.chunks().map(chunk => {
+          expect(chunk.every(hex => {
+            return (hex == 0 || hex == 255);
+          })).to.be.true;
+        });
+        // pic.debug().open();
+      })
+    })
+  })
 })
+
 const base64samples = {
   '01': `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAQCAYAAA
 DagWXwAAABmElEQVQYVz2Ry2sTcRSFvzuJCXahiIWQdTZ2p66tRtpGa4KF7r
