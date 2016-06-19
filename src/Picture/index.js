@@ -17,6 +17,9 @@ export default class Picture {
         const ctx = this.canvas.getContext('2d')
         ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, this.canvas.width, this.canvas.height);
         this.bytes = ctx.getImageData(0, 0, img.width, img.height).data;
+        if (typeof this.bytes.slice !== 'function') {
+          this.bytes.slice = Array.prototype.slice;
+        }
         resolve(this);
       };
     })
