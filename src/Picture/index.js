@@ -33,6 +33,7 @@ export default class Picture {
       // anyway
       this.bytes[i+3] = 255;
     }
+    this.binarized = true;
     // console.log(this.bytes);
     return this;
   }
@@ -42,6 +43,25 @@ export default class Picture {
       pool.push(this.bytes.slice(i, i+4));
     }
     return pool;
+  }
+  compareTo(...pics) {
+    const tasks = pics.map(pic => { return this.compare(pic) });
+    return Promise.all(tasks);;
+  }
+  compare(pic) {
+    const _mychunks = this.chunks();
+    const yourchunks = pic.chunks();
+    if (this.binarized) {
+      const totalscore = _mychunks.map((chunk, i) => {
+        return Math.abs(chunk[0] - yourchunks[i][0]);
+      }).reduce((total, score) => {
+        return total + score;
+      }) / _mychunks.length;
+      return Promise.resolve({
+        score: (255 - totalscore) / 255
+      });
+    }
+    return Promise.resolve({});
   }
   debug() {
     this.open = () => {

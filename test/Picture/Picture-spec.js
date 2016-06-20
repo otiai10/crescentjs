@@ -24,6 +24,26 @@ describe('Picture', () => {
       })
     })
   })
+  describe('compareTo', () => {
+    it('should return scores', () => {
+      let pic1 = new Picture(base64samples['01']);
+      let pic2 = new Picture(base64samples['01']);
+      // let pic3 = new Picture(base64samples['01']);
+      let pic3 = new Picture(base64samples['02']);
+      return Promise.all([
+        pic2.initialized, pic3.initialized
+      ]).then(() => {
+        pic1.binarize();
+        pic2.binarize();
+        pic3.binarize();
+        return pic1.compareTo(pic2, pic3)
+      }).then(results => {
+        expect(results.length).to.eq(2);
+        expect(results[0].score).to.eq(1);
+        expect(results[1].score).not.to.eq(1);
+      })
+    })
+  })
 })
 
 const base64samples = {
