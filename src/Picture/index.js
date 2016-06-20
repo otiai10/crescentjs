@@ -19,16 +19,16 @@ export default class Picture {
   hello() {
     return 'hello, this is crescent.Image';
   }
-  getDarkness(r, g, b, a) {
+  getBrightness(r, g, b, a) {
     return ((r + g + a) / 3) * (a/255);
   }
   binarize(threshold = 140) {
     for (let i = 0; i < this.bytes.length; i += 4) {
-      const darkness = this.getDarkness(...this.bytes.slice(i, i+4));
-      if (darkness > threshold) {
-        this.bytes[i] = this.bytes[i+1] = this.bytes[i+2] = 0; // BLACK
-      } else {
+      const brightness = this.getBrightness(...this.bytes.slice(i, i+4));
+      if (brightness > threshold) {
         this.bytes[i] = this.bytes[i+1] = this.bytes[i+2] = 255; // WHITE
+      } else {
+        this.bytes[i] = this.bytes[i+1] = this.bytes[i+2] = 0; // BLACK
       }
       // anyway
       this.bytes[i+3] = 255;
