@@ -1,33 +1,40 @@
 export default class Picture {
   constructor(data) {
-    const INDICATOR = /((data):(image\/([a-zA-Z]+));(base64),).+/;
-    const matched = data.match(INDICATOR);
-    if (!matched) throw 'Invalid image base64 data';
-    if (matched.length < 3) throw 'Invalid format of base64';
-
-    const base64string = data.replace(matched[1], '');
-
-    this.prefix = matched[1]; // TODO
-
-    const raw = data.replace(this.prefix, '');
-    this.bytes = new Uint8ClampedArray(raw.length);
-    atob(raw).split('').map((char, i) => {
-      this.bytes[i] = char.charCodeAt(0);
+    this.canvas = document.createElement('canvas');
+    let img = new Image();
+    this.initialized = new Promise(resolve => {
+      img.onload = () => {
+        this.canvas.width = img.width;
+        this.canvas.height = img.height;
+        let ctx = this.canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+        this.bytes = ctx.getImageData(0, 0, img.width, img.height).data;
+        // For Safari
+        if (this.bytes.slice !== 'function') this.bytes.slice = Array.prototype.slice;
+        resolve(this);
+      };
     });
+    img.src = data;
   }
   hello() {
     return 'hello, this is crescent.Image';
   }
-  binarize(threshold = (255/2) * 4) {
-    // 全部じゃないっぽいぞ　
+  getDarkness(r, g, b, a) {
+    return ((r + g + a) / 3) * (a/255);
+  }
+  binarize(threshold = 140) {
     for (let i = 0; i < this.bytes.length; i += 4) {
-      if (this.bytes[i] + this.bytes[i+1] + this.bytes[i+2] + this.bytes[i+3] > threshold) {
-        this.bytes[i] = this.bytes[i+1] = this.bytes[i+2] = this.bytes[i+3] = 255;
+      const darkness = this.getDarkness(...this.bytes.slice(i, i+4));
+      if (darkness > threshold) {
+        this.bytes[i] = this.bytes[i+1] = this.bytes[i+2] = 0; // BLACK
       } else {
-        this.bytes[i] = this.bytes[i+1] = this.bytes[i+2] = this.bytes[i+3] = 0;
+        this.bytes[i] = this.bytes[i+1] = this.bytes[i+2] = 255; // WHITE
       }
+      // anyway
+      this.bytes[i+3] = 255;
     }
-    return Promise.resolve(this);
+    // console.log(this.bytes);
+    return this;
   }
   chunks() {
     let pool = [];
@@ -38,9 +45,12 @@ export default class Picture {
   }
   debug() {
     this.open = () => {
-      const uri = this.prefix + btoa(String.fromCharCode.apply(null, this.bytes));
+      let ctx = this.canvas.getContext('2d');
+      ctx.putImageData(new ImageData(this.bytes, this.canvas.width, this.canvas.height), 0, 0);
+      const uri = this.canvas.toDataURL();
       if (window && typeof window.open == 'function') window.open(uri);
       else console.log(uri);
+      return Promise.resolve();
     }
     return this;
   }
