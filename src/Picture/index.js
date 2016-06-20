@@ -1,28 +1,19 @@
 export default class Picture {
   constructor(data) {
-    let img = null;
-    if (data instanceof Image) {
-      img = data;
-    } else if (typeof data == 'string') {
-      img = new Image();
-      img.src = data;
-    } else {
-      throw 'Invalid data for constructor of Picture';
-    }
-    this.initialized = new Promise((resolve) => {
-      img.onload = () => {
-        this.canvas = document.createElement('canvas');
-        this.canvas.width = img.width;
-        this.canvas.height = img.height;
-        const ctx = this.canvas.getContext('2d')
-        ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, this.canvas.width, this.canvas.height);
-        this.bytes = ctx.getImageData(0, 0, img.width, img.height).data;
-        if (typeof this.bytes.slice !== 'function') {
-          this.bytes.slice = Array.prototype.slice;
-        }
-        resolve(this);
-      };
-    })
+    const INDICATOR = /((data):(image\/([a-zA-Z]+));(base64),).+/;
+    const matched = data.match(INDICATOR);
+    if (!matched) throw 'Invalid image base64 data';
+    if (matched.length < 3) throw 'Invalid format of base64';
+
+    const base64string = data.replace(matched[1], '');
+
+    this.prefix = matched[1]; // TODO
+
+    const raw = data.replace(this.prefix, '');
+    this.bytes = new Uint8ClampedArray(raw.length);
+    atob(raw).split('').map((char, i) => {
+      this.bytes[i] = char.charCodeAt(0);
+    });
   }
   hello() {
     return 'hello, this is crescent.Image';
@@ -47,8 +38,9 @@ export default class Picture {
   }
   debug() {
     this.open = () => {
-      const uri = 'data:image/png;base64,' + btoa(String.fromCharCode.apply(null, this.bytes));
-      window.open(uri);
+      const uri = this.prefix + btoa(String.fromCharCode.apply(null, this.bytes));
+      if (window && typeof window.open == 'function') window.open(uri);
+      else console.log(uri);
     }
     return this;
   }
