@@ -11,6 +11,13 @@ describe('Picture', () => {
       // pic.debug().open();
     })
   })
+  describe('init', () => {
+    it('should return initializing promise (short hand for constructor and .initialized)', () => {
+      return Picture.init(base64samples['01']).then(pic => {
+        expect(pic instanceof Picture).to.be.true;
+      })
+    })
+  })
   describe('binarize', () => {
     it('should binarize picture', () => {
       let pic = new Picture(base64samples['01']);

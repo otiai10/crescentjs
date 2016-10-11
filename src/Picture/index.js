@@ -16,6 +16,10 @@ export default class Picture {
     });
     img.src = data;
   }
+  static init(data) {
+    let pic = new Picture(data);
+    return pic.initialized;
+  }
   hello() {
     return 'hello, this is crescent.Image';
   }
