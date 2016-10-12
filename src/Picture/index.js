@@ -1,3 +1,40 @@
+
+export class Results extends Array {
+  constructor(arr) {
+    super(...arr);
+    this.debug = (context) => {
+      if (typeof context.open != "function") return;
+      if (this.length == 0) return;
+      let canvas = document.createElement('canvas');
+      canvas.width = this[0].frame.width * 5;
+      canvas.height = this[0].frame.height * this.length;
+      let ctx = canvas.getContext('2d');
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "black";
+      this.map((result, i) => {
+        ctx.putImageData(
+          new ImageData(result.diff, result.frame.width, result.frame.height),
+          0, result.frame.height * i,
+          0, 0,
+          result.frame.width, result.frame.height
+        );
+        ctx.font = "12px Helvetica";
+        ctx.fillText(
+          `${result.score}`,
+          result.frame.width + 8,
+          result.frame.height * (i + 1) - 2
+        );
+      });
+      const uri = canvas.toDataURL();
+      window.open(uri);
+    }
+  }
+  /* XXX: why it doesn't work?
+  debug(context) {
+  }
+  */
+}
 export default class Picture {
   constructor(data) {
     this.canvas = document.createElement('canvas');
@@ -6,6 +43,10 @@ export default class Picture {
       img.onload = () => {
         this.canvas.width = img.width;
         this.canvas.height = img.height;
+        this.frame = {
+          width: img.width,
+          height: img.height
+        };
         let ctx = this.canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, img.width, img.height);
         this.bytes = ctx.getImageData(0, 0, img.width, img.height).data;
@@ -50,18 +91,26 @@ export default class Picture {
   }
   compareTo(...pics) {
     const tasks = pics.map(pic => { return this.compare(pic) });
-    return Promise.all(tasks);;
+    return Promise.all(tasks).then(results => { return Promise.resolve(new Results(results)); });
   }
   compare(pic) {
     const _mychunks = this.chunks();
     const yourchunks = pic.chunks();
+    let diffchunks = Uint8ClampedArray.from(this.bytes);
     if (this.binarized) {
       const totalscore = _mychunks.map((chunk, i) => {
-        return Math.abs(chunk[0] - yourchunks[i][0]);
+        const abs = Math.abs(chunk[0] - yourchunks[i][0]);
+        diffchunks[i * 4 + 0] = abs;
+        diffchunks[i * 4 + 1] = abs;
+        diffchunks[i * 4 + 2] = abs;
+        diffchunks[i * 4 + 3] = 255;
+        return abs;
       }).reduce((total, score) => {
         return total + score;
       }) / _mychunks.length;
       return Promise.resolve({
+        frame: {...this.frame},
+        diff: diffchunks,
         score: (255 - totalscore) / 255
       });
     }
