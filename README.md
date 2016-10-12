@@ -43,7 +43,14 @@ pic.initialized.then(() => {
 
 # Visual Diff
 
-// TODO
+```javascript
+pic.compareTo(...numbers).then(results => {
+  results.debug(window);
+})
+// TODO: should just return image URL
+```
+
+![](https://cloud.githubusercontent.com/assets/931554/19325403/43542de2-90c6-11e6-9c06-d6782ff7c2a3.png)
 
 # Development
 
